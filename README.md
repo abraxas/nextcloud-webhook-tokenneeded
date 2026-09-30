@@ -18,6 +18,8 @@
 
 Unpublished Nextcloud source finding: `WebhooksController::create()` nulls `tokenNeeded` unless the caller is a full instance admin. `update()` does not. A delegated Webhooks settings admin (not in `admin`) can store `tokenNeeded.user_ids: ["admin"]` on an existing webhook, then receive a one-hour unscoped `PERMANENT_TOKEN` app password for that uid when the event fires.
 
+**A bad actor who was only trusted to manage webhooks can log in as `admin` (or any user they name) for one hour, skip 2FA, and read or overwrite that person's files.**
+
 | | |
 |---|---|
 | ID | Unpublished Nextcloud source finding #2 (no CVE yet) |
@@ -29,6 +31,21 @@ Unpublished Nextcloud source finding: `WebhooksController::create()` nulls `toke
 | Auth | delegated Webhooks settings admin (`IDelegatedSettings`) |
 | License | [GNU Affero GPL v3.0](LICENSE) |
 | Lab | `127.0.0.1` only · vendor/client disclosure pack, not a scanner |
+
+---
+
+## What an attacker can do
+
+You gave someone the **Webhooks** settings job. They are not in the `admin` group. Nextcloud still lets them edit an existing webhook so that, on the next matching event, the server **mails them a one-hour login** for any uid they list, including `admin`.
+
+With that login they can:
+
+- Open **all of that person's files** (not only something the webhook was supposed to see)
+- **Download and overwrite** those files
+- Use Files / WebDAV **as that person**
+- **Skip 2FA** (this is an app password, not a password prompt)
+
+They do not need a PHP shell on the host. They do not need to be a full instance admin. A stranger on the internet with no account cannot do this. The hole is the staffer you already trusted with webhooks, impersonating the people you did not.
 
 ---
 
