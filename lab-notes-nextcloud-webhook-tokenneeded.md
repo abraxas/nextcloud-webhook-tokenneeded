@@ -1,4 +1,4 @@
-# Nextcloud unpublished #2 — webhook update honors tokenNeeded
+# Nextcloud unpublished #2 - webhook update honors tokenNeeded
 
 CWE: CWE-863, CWE-269
 Severity: High 8.8 (CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H)
